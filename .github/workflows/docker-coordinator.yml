@@ -81,7 +81,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build tvarr-coordinator image
-        run: task container:build:coordinator TAG=${{ matrix.arch }}
+        run: task container:build:coordinator TAG=${{ matrix.arch }} IMAGE_REPOSITORY="$REGISTRY/$IMAGE_NAME"
         env:
           CONTAINER_RUNTIME: docker
           # Use the classic builder: makepkg's fakeroot (SysV IPC) fails in the

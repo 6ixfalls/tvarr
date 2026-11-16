@@ -251,6 +251,7 @@ tasks:
       Options:
         - PLATFORM: Target platform (default: auto-detected {{.LOCAL_ARCH}})
         - TAG: Image tag (default: latest)
+        - IMAGE_REPOSITORY: Output image repository (default: ghcr.io/jmylchreest/tvarr)
         - FFMPEG_IMAGE: FFmpeg base image (default: ghcr.io/jmylchreest/tvarr-ffmpeg:latest)
         - LOCAL: Use local images only, don't pull from registry (default: false)
 
@@ -261,6 +262,7 @@ tasks:
     vars:
       TAG: '{{.TAG | default "latest"}}'
       PLATFORM: '{{.PLATFORM | default .LOCAL_ARCH}}'
+      IMAGE_REPOSITORY: '{{.IMAGE_REPOSITORY | default "ghcr.io/jmylchreest/tvarr"}}'
       FFMPEG_IMAGE: '{{.FFMPEG_IMAGE | default "ghcr.io/jmylchreest/tvarr-ffmpeg:latest"}}'
       LOCAL: '{{.LOCAL | default "false"}}'
     cmds:
@@ -276,8 +278,8 @@ tasks:
           --build-arg BUILD_DATE={{.BUILD_DATE}} \
           --build-arg BRANCH={{.BRANCH}} \
           --build-arg TREE_STATE={{.TREE_STATE}} \
-          -t ghcr.io/jmylchreest/tvarr:{{.TAG}} \
-          -t ghcr.io/jmylchreest/tvarr:{{.VERSION_TAG}} \
+          -t "{{.IMAGE_REPOSITORY}}:{{.TAG}}" \
+          -t "{{.IMAGE_REPOSITORY}}:{{.VERSION_TAG}}" \
           .
 
   container:build:ffmpegd:
@@ -290,6 +292,7 @@ tasks:
       Options:
         - PLATFORM: Target platform (default: auto-detected {{.LOCAL_ARCH}})
         - TAG: Image tag (default: latest)
+        - IMAGE_REPOSITORY: Output image repository (default: ghcr.io/jmylchreest/tvarr-transcoder)
         - FFMPEG_IMAGE: FFmpeg base image (default: ghcr.io/jmylchreest/tvarr-ffmpeg:latest)
         - LOCAL: Use local images only, don't pull from registry (default: false)
 
@@ -299,6 +302,7 @@ tasks:
     vars:
       TAG: '{{.TAG | default "latest"}}'
       PLATFORM: '{{.PLATFORM | default .LOCAL_ARCH}}'
+      IMAGE_REPOSITORY: '{{.IMAGE_REPOSITORY | default "ghcr.io/jmylchreest/tvarr-transcoder"}}'
       FFMPEG_IMAGE: '{{.FFMPEG_IMAGE | default "ghcr.io/jmylchreest/tvarr-ffmpeg:latest"}}'
       LOCAL: '{{.LOCAL | default "false"}}'
     cmds:
@@ -314,8 +318,8 @@ tasks:
           --build-arg BUILD_DATE={{.BUILD_DATE}} \
           --build-arg BRANCH={{.BRANCH}} \
           --build-arg TREE_STATE={{.TREE_STATE}} \
-          -t ghcr.io/jmylchreest/tvarr-transcoder:{{.TAG}} \
-          -t ghcr.io/jmylchreest/tvarr-transcoder:{{.VERSION_TAG}} \
+          -t "{{.IMAGE_REPOSITORY}}:{{.TAG}}" \
+          -t "{{.IMAGE_REPOSITORY}}:{{.VERSION_TAG}}" \
           .
 
   container:build:coordinator:
@@ -329,6 +333,7 @@ tasks:
       Options:
         - PLATFORM: Target platform (default: auto-detected {{.LOCAL_ARCH}})
         - TAG: Image tag (default: latest)
+        - IMAGE_REPOSITORY: Output image repository (default: ghcr.io/jmylchreest/tvarr-coordinator)
 
       Local builds also create a version-tagged image ({{.VERSION}}).
 
@@ -337,6 +342,7 @@ tasks:
     vars:
       TAG: '{{.TAG | default "latest"}}'
       PLATFORM: '{{.PLATFORM | default .LOCAL_ARCH}}'
+      IMAGE_REPOSITORY: '{{.IMAGE_REPOSITORY | default "ghcr.io/jmylchreest/tvarr-coordinator"}}'
     cmds:
       - |
         {{.CONTAINER_RUNTIME}} build \
@@ -348,8 +354,8 @@ tasks:
           --build-arg BUILD_DATE={{.BUILD_DATE}} \
           --build-arg BRANCH={{.BRANCH}} \
           --build-arg TREE_STATE={{.TREE_STATE}} \
-          -t ghcr.io/jmylchreest/tvarr-coordinator:{{.TAG}} \
-          -t ghcr.io/jmylchreest/tvarr-coordinator:{{.VERSION_TAG}} \
+          -t "{{.IMAGE_REPOSITORY}}:{{.TAG}}" \
+          -t "{{.IMAGE_REPOSITORY}}:{{.VERSION_TAG}}" \
           .
 
   container:build:ffmpeg:
