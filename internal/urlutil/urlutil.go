@@ -135,9 +135,7 @@ type ResourceFetcher struct {
 // Uses a per-host circuit breaker from the default manager.
 func NewResourceFetcher(cfg httpclient.Config) *ResourceFetcher {
 	breaker := httpclient.DefaultManager.GetOrCreate("resource-fetcher")
-	return &ResourceFetcher{
-		httpClient: httpclient.NewWithBreaker(cfg, breaker),
-	}
+	return NewResourceFetcherWithBreaker(cfg, breaker)
 }
 
 // NewResourceFetcherWithBreaker creates a ResourceFetcher with a specific circuit breaker.
@@ -154,6 +152,11 @@ func NewDefaultResourceFetcher() *ResourceFetcher {
 	return &ResourceFetcher{
 		httpClient: httpclient.NewWithBreaker(cfg, breaker),
 	}
+}
+
+// WithBreaker returns a fetcher using the same underlying HTTP client with breaker.
+func (f *ResourceFetcher) WithBreaker(breaker *httpclient.CircuitBreaker) *ResourceFetcher {
+	return &ResourceFetcher{httpClient: f.httpClient.WithBreaker(breaker)}
 }
 
 // Fetch retrieves content from a URL (http://, https://, or file://).

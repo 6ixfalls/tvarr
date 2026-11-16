@@ -97,15 +97,11 @@ func (h *XtreamHandler) Ingest(ctx context.Context, source *models.StreamSource,
 	breakerName := circuitBreakerNameFromURL(source.URL, "xtream-ingestion")
 	breaker := httpclient.DefaultManager.GetOrCreate(breakerName)
 
-	cfg := httpclient.DefaultConfig()
-	cfg.Timeout = defaultXtreamTimeout
-	httpClient := httpclient.NewWithBreaker(cfg, breaker)
-
 	client := xtream.NewClient(
 		source.URL,
 		source.Username,
 		source.Password,
-		xtream.WithHTTPClient(httpClient.StandardClient()),
+		xtream.WithHTTPClient(h.httpClient.WithBreaker(breaker).StandardClient()),
 	)
 
 	categories, err := client.GetLiveCategories(ctx)

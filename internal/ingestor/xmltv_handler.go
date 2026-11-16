@@ -92,11 +92,7 @@ func (h *XMLTVHandler) Ingest(ctx context.Context, source *models.EpgSource, cal
 	breakerName := xmltvBreakerNameFromURL(source.URL)
 	breaker := httpclient.DefaultManager.GetOrCreate(breakerName)
 
-	cfg := httpclient.DefaultConfig()
-	cfg.Timeout = defaultXMLTVTimeout
-	fetcher := urlutil.NewResourceFetcherWithBreaker(cfg, breaker)
-
-	reader, err := fetcher.Fetch(ctx, source.URL)
+	reader, err := h.fetcher.WithBreaker(breaker).Fetch(ctx, source.URL)
 	if err != nil {
 		return fmt.Errorf("failed to fetch XMLTV: %w", err)
 	}

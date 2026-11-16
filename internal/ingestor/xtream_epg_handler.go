@@ -110,15 +110,11 @@ func (h *XtreamEpgHandler) Ingest(ctx context.Context, source *models.EpgSource,
 	breakerName := xtreamEpgBreakerNameFromURL(source.URL)
 	breaker := httpclient.DefaultManager.GetOrCreate(breakerName)
 
-	cfg := httpclient.DefaultConfig()
-	cfg.Timeout = defaultEpgTimeout
-	httpClient := httpclient.NewWithBreaker(cfg, breaker)
-
 	client := xtream.NewClient(
 		source.URL,
 		source.Username,
 		source.Password,
-		xtream.WithHTTPClient(httpClient.StandardClient()),
+		xtream.WithHTTPClient(h.httpClient.WithBreaker(breaker).StandardClient()),
 	)
 
 	h.serverLocation = nil

@@ -17,7 +17,7 @@ import (
 
 // M3U handler configuration defaults.
 const (
-	defaultM3UTimeout = 5 * time.Minute
+	defaultM3UTimeout = 10 * time.Minute
 )
 
 // M3UHandler handles ingestion of M3U playlist sources.
@@ -81,11 +81,7 @@ func (h *M3UHandler) Ingest(ctx context.Context, source *models.StreamSource, ca
 	breakerName := m3uBreakerNameFromURL(source.URL)
 	breaker := httpclient.DefaultManager.GetOrCreate(breakerName)
 
-	cfg := httpclient.DefaultConfig()
-	cfg.Timeout = defaultM3UTimeout
-	fetcher := urlutil.NewResourceFetcherWithBreaker(cfg, breaker)
-
-	body, err := fetcher.Fetch(ctx, source.URL)
+	body, err := h.fetcher.WithBreaker(breaker).Fetch(ctx, source.URL)
 	if err != nil {
 		return fmt.Errorf("fetching M3U: %w", err)
 	}

@@ -2,7 +2,11 @@ package ingestor
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/jmylchreest/tvarr/internal/models"
 )
@@ -32,6 +36,28 @@ func TestHandlerFactory_NewFactory(t *testing.T) {
 	}
 	if h.Type() != models.SourceTypeXtream {
 		t.Errorf("expected Xtream type, got %s", h.Type())
+	}
+}
+
+func TestHandlerFactory_M3UHTTPTimeout(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.(http.Flusher).Flush()
+		<-r.Context().Done()
+	}))
+	defer server.Close()
+
+	source := &models.StreamSource{Type: models.SourceTypeM3U, URL: server.URL}
+	handler, err := NewHandlerFactoryWithHTTPTimeout(100 * time.Millisecond).GetForSource(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = handler.Ingest(ctx, source, func(*models.Channel) error { return nil })
+	if err == nil || !strings.Contains(err.Error(), "Client.Timeout") {
+		t.Fatalf("expected the HTTP client timeout while reading the playlist, got %v", err)
 	}
 }
 

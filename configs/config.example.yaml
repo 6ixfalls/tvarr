@@ -72,7 +72,7 @@ ingestion:
   # Batch size for EPG program database operations
   epg_batch_size: 5000
   # HTTP timeout for fetching sources
-  http_timeout: 60s
+  http_timeout: 5m
   # Maximum concurrent source downloads
   max_concurrent: 3
   # Number of retry attempts for failed downloads

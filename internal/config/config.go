@@ -24,7 +24,7 @@ const (
 	defaultMaxLogoSizeBytes      = 5 * 1024 * 1024 // 5MB
 	defaultChannelBatchSize      = 1000
 	defaultEPGBatchSize          = 5000
-	defaultHTTPTimeout           = 60 * time.Second
+	defaultHTTPTimeout           = 5 * time.Minute
 	defaultMaxConcurrent         = 3
 	defaultRetryAttempts         = 3
 	defaultRetryDelay            = 5 * time.Second

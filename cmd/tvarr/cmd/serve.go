@@ -308,9 +308,10 @@ func runServe(_ *cobra.Command, _ []string) error {
 	// Initialize ingestor components
 	stateManager := ingestor.NewStateManager()
 	defer stateManager.Stop()
-	streamHandlerFactory := ingestor.NewHandlerFactory()
+	ingestionHTTPTimeout := viper.GetDuration("ingestion.http_timeout")
+	streamHandlerFactory := ingestor.NewHandlerFactoryWithHTTPTimeout(ingestionHTTPTimeout)
 	streamHandlerFactory.RegisterManualHandler(manualChannelRepo) // Add manual source support
-	epgHandlerFactory := ingestor.NewEpgHandlerFactory()
+	epgHandlerFactory := ingestor.NewEpgHandlerFactoryWithHTTPTimeout(ingestionHTTPTimeout)
 
 	// Initialize pipeline factory with default stages and optional ingestion guard
 	var ingestionGuardStateManager *ingestor.StateManager

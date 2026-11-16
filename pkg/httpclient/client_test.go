@@ -45,6 +45,19 @@ func TestNew(t *testing.T) {
 	})
 }
 
+func TestClient_WithBreaker(t *testing.T) {
+	client := newWithDefaults()
+	originalBreaker := client.breaker
+	breaker := NewCircuitBreaker(1, time.Minute, 1)
+	breaker.RecordFailure()
+
+	bound := client.WithBreaker(breaker)
+	assert.Same(t, client.client, bound.client)
+	assert.Same(t, originalBreaker, client.breaker)
+	assert.Equal(t, CircuitOpen, bound.CircuitState())
+	assert.Equal(t, CircuitClosed, client.CircuitState())
+}
+
 func TestClient_Get(t *testing.T) {
 	t.Run("successful request", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

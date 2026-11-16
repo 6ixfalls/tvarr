@@ -96,7 +96,7 @@ Controls how tvarr fetches and processes M3U/XMLTV sources.
 |------------|---------------------|---------|-------------|
 | `ingestion.channel_batch_size` | `TVARR_INGESTION_CHANNEL_BATCH_SIZE` | `1000` | Batch size for channel processing |
 | `ingestion.epg_batch_size` | `TVARR_INGESTION_EPG_BATCH_SIZE` | `5000` | Batch size for EPG/program processing |
-| `ingestion.http_timeout` | `TVARR_INGESTION_HTTP_TIMEOUT` | `60s` | HTTP request timeout |
+| `ingestion.http_timeout` | `TVARR_INGESTION_HTTP_TIMEOUT` | `5m` | HTTP request timeout |
 | `ingestion.max_concurrent` | `TVARR_INGESTION_MAX_CONCURRENT` | `3` | Max concurrent source fetches |
 | `ingestion.retry_attempts` | `TVARR_INGESTION_RETRY_ATTEMPTS` | `3` | Number of retry attempts |
 | `ingestion.retry_delay` | `TVARR_INGESTION_RETRY_DELAY` | `5s` | Delay between retries |
@@ -208,7 +208,7 @@ logging:
 ingestion:
   channel_batch_size: 1000
   epg_batch_size: 5000
-  http_timeout: 60s
+  http_timeout: 5m
   max_concurrent: 3
   retry_attempts: 3
   retry_delay: 5s

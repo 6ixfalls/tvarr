@@ -3,9 +3,11 @@ package ingestor
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/jmylchreest/tvarr/internal/models"
 	"github.com/jmylchreest/tvarr/internal/repository"
+	"github.com/jmylchreest/tvarr/pkg/httpclient"
 )
 
 // HandlerFactory creates and manages source handlers.
@@ -18,14 +20,26 @@ type HandlerFactory struct {
 // Note: Manual handler is not registered by default since it requires a repository.
 // Use RegisterManualHandler to add manual source support.
 func NewHandlerFactory() *HandlerFactory {
+	return NewHandlerFactoryWithHTTPTimeout(0)
+}
+
+// NewHandlerFactoryWithHTTPTimeout overrides the default HTTP timeout for stream handlers
+// when timeout is positive.
+func NewHandlerFactoryWithHTTPTimeout(timeout time.Duration) *HandlerFactory {
 	f := &HandlerFactory{
 		handlers: make(map[models.SourceType]SourceHandler),
 	}
 
-	// Register default handlers that don't require external dependencies
-	f.Register(NewM3UHandler())
-	f.Register(NewXtreamHandler())
-
+	m3u := NewM3UHandler()
+	xtream := NewXtreamHandler()
+	if timeout > 0 {
+		cfg := httpclient.DefaultConfig()
+		cfg.Timeout = timeout
+		m3u.WithHTTPClientConfig(cfg)
+		xtream.WithHTTPClientConfig(cfg)
+	}
+	f.Register(m3u)
+	f.Register(xtream)
 	return f
 }
 
@@ -81,14 +95,26 @@ type EpgHandlerFactory struct {
 
 // NewEpgHandlerFactory creates a new EPG handler factory with default handlers registered.
 func NewEpgHandlerFactory() *EpgHandlerFactory {
+	return NewEpgHandlerFactoryWithHTTPTimeout(0)
+}
+
+// NewEpgHandlerFactoryWithHTTPTimeout overrides the default HTTP timeout for EPG handlers
+// when timeout is positive.
+func NewEpgHandlerFactoryWithHTTPTimeout(timeout time.Duration) *EpgHandlerFactory {
 	f := &EpgHandlerFactory{
 		handlers: make(map[models.EpgSourceType]EpgHandler),
 	}
 
-	// Register default handlers
-	f.Register(NewXMLTVHandler())
-	f.Register(NewXtreamEpgHandler())
-
+	xmltv := NewXMLTVHandler()
+	xtream := NewXtreamEpgHandler()
+	if timeout > 0 {
+		cfg := httpclient.DefaultConfig()
+		cfg.Timeout = timeout
+		xmltv.WithHTTPClientConfig(cfg)
+		xtream.WithHTTPClientConfig(cfg)
+	}
+	f.Register(xmltv)
+	f.Register(xtream)
 	return f
 }
 

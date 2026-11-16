@@ -201,6 +201,17 @@ func NewWithBreaker(cfg Config, breaker *CircuitBreaker) *Client {
 	}
 }
 
+// WithBreaker returns a copy that shares the underlying HTTP client and uses breaker.
+// A nil breaker leaves the client unchanged.
+func (c *Client) WithBreaker(breaker *CircuitBreaker) *Client {
+	if breaker == nil {
+		return c
+	}
+	client := *c
+	client.breaker = breaker
+	return &client
+}
+
 // Do executes an HTTP request with circuit breaker protection and automatic retries.
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return c.DoWithContext(req.Context(), req)
